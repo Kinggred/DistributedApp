@@ -19,6 +19,7 @@ const (
 )
 
 func seekActiveHost(address string, port string) {
+	// TODO: Fix, WithInsecure is obsolete
 	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Cannot connect to server %v", err)
@@ -57,10 +58,12 @@ func seekActiveHost(address string, port string) {
 }
 
 func RunClient() {
+
 	// TODO: This seeks localhost only for now.
 	// Some kind of Goroutines for multiple connections might be required
 	// Update: Looks like goroutines and channels will do the trick
 	log.Printf("Started a client")
+	// TODO: This should be refreshed every so often
 	ScanNetwork()
 	seekActiveHost("", ApplicationPort)
 }

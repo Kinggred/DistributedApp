@@ -6,6 +6,8 @@ import (
 	"net"
 	"strings"
 	"time"
+
+	config "tic-tac-toe/core/config"
 )
 
 func getLocalIP() net.IP {
@@ -37,16 +39,19 @@ func scanPort(ip string, port int, timeout time.Duration) bool {
 	return true
 }
 
-func ScanNetwork() {
+func ScanNetwork() []string {
+	var hostList []string
 	localAddress := strings.Split(getLocalIP().String(), ":")[0]
 	subnet := getSubnet(localAddress)
 	timeout := 2 * time.Millisecond
 
-	for i := 1; i <= 254; i++ {
+	for i := 1; i < 254; i++ {
 		ip := fmt.Sprintf("%s%d", subnet, i)
-		if scanPort(ip, 50051, timeout) && ip != localAddress {
+		if scanPort(ip, 50051, timeout) && (ip != localAddress || (config.DEBUG && ip == localAddress)) {
 			log.Printf("Active device found at %s", ip)
+			hostList = append(hostList, ip)
 		}
 	}
-	log.Printf("Sweep done")
+	log.Printf("Sweep done, no. of hosts found: %d", len(hostList))
+	return hostList
 }
