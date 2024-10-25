@@ -61,5 +61,6 @@ func RunClient() {
 	// Some kind of Goroutines for multiple connections might be required
 	// Update: Looks like goroutines and channels will do the trick
 	log.Printf("Started a client")
+	ScanNetwork()
 	seekActiveHost("", ApplicationPort)
 }
