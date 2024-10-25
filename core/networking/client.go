@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"sync"
 
 	"google.golang.org/grpc"
 )
@@ -20,6 +21,7 @@ const (
 
 func seekActiveHost(address string, port string) {
 	// TODO: Fix, WithInsecure is obsolete
+	// TODO: I forgot why I made this, but something else has to be done for sure
 	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Cannot connect to server %v", err)
@@ -35,35 +37,37 @@ func seekActiveHost(address string, port string) {
 		log.Fatalf("Error during openning stream")
 	}
 
-	done := make(chan bool)
-
-	go func() {
-		log.SetPrefix("Client: ")
-		for {
-			response, err := stream.Recv()
-			if err == io.EOF {
-				done <- true
-				return
-			}
-			if err != nil {
-				log.Fatalf("Cannot receive %v", err)
-			}
-			// TODO: Implement some LOOOOOOGIC
-			log.Printf("Response received: %s", response)
+	for {
+		response, err := stream.Recv()
+		if err == io.EOF {
+			log.Printf("Finished")
 		}
-	}()
+		if err != nil {
+			log.Fatalf("Cannot receive %v", err)
+		}
+		// TODO: Implement some LOOOOOOGIC
+		log.Printf("Response received: %s", response.Id)
+	}
 
-	<-done
-	log.Printf("Finished")
 }
 
 func RunClient() {
 
-	// TODO: This seeks localhost only for now.
-	// Some kind of Goroutines for multiple connections might be required
-	// Update: Looks like goroutines and channels will do the trick
+	// TODO: Implement channels so We have a way to access lobby status from outside
+	// TODO: This has to be updatable prefferabbly without reccontcting already established links.
+	// No clue how to do this, at least for now.
+	// REMINDER: Due to the nature of this kerfuffle I have to setup separate machines ( docker possibly? )
+	// to be able to test it.
 	log.Printf("Started a client")
-	// TODO: This should be refreshed every so often
-	ScanNetwork()
-	seekActiveHost("", ApplicationPort)
+	var wg sync.WaitGroup
+	activeHosts := ScanNetwork()
+
+	wg.Add(len(activeHosts))
+	for _, ip := range activeHosts {
+		go func() {
+			defer wg.Done()
+			seekActiveHost(ip, ApplicationPort)
+		}()
+	}
+	wg.Wait()
 }
