@@ -6,6 +6,8 @@ import (
 	"log"
 	"sync"
 
+	conf "tic-tac-toe/core/config"
+
 	"google.golang.org/grpc"
 )
 
@@ -29,8 +31,8 @@ func seekActiveHost(address string, port string) {
 
 	client := NewLobbySearchServiceClient(conn)
 	in := &LobbyRequest{
-		VersionMain: VersionMain,
-		VersionMin:  VersionMin,
+		VersionMain: int32(conf.CONFIG.VERSION_MAIN),
+		VersionMin:  int32(conf.CONFIG.VERSION_MAIN),
 	}
 	stream, err := client.RequestActiveLobbies(context.Background(), in)
 	if err != nil {

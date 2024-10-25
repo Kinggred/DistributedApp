@@ -1,0 +1,5 @@
+debug: true
+version_main: 0
+version_min: 1
+
+server_only: false
