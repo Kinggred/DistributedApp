@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package core;
+option go_package = "./core";
+
+service LobbySearchService {
+        rpc RequestActiveLobbies(LobbyRequest) returns (stream LobbyProposal);
+        rpc RequestLobbyJoin(JoinLobbyRequest) returns (JoinLobbyResponse);
+        rpc RegisterOwner(RegisterOwnerRequest) returns (RegisterOwnerResponse);
+    }
+    
+// Client requests available lobbies
+message LobbyRequest {
+        int32 version_main = 1;
+        int32 version_min = 2;
+        // Possibly an return address?
+    }
+// Active servers respond
+message LobbyProposal {
+        // Sligid-go ?
+        string id = 1;
+        // Player name ?
+        string owner = 2;
+        bool is_full = 3;
+        bool is_running = 4;
+    }
+
+message JoinLobbyRequest {
+        string id = 1;
+        string name = 2;
+    }
+
+message JoinLobbyResponse {
+        string id = 1;
+        string key = 2;
+    }
+
+message RegisterOwnerRequest {
+        string id = 1;
+    }
+
+message RegisterOwnerResponse {
+        bool accepted = 1;
+    }
+
+// service GameService() {
+        // TODO: Figure out
+//    }

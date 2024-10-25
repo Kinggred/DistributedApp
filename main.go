@@ -1,21 +1,29 @@
 package main
 
 import (
-	"fmt"
-	"tic-tac-toe/core"
+	"log"
+	"sync"
+	networking "tic-tac-toe/core/networking"
 )
 
 func main() {
-	fmt.Print("Enter node type (master / worker): ")
-	var nodeType string
-	fmt.Scanln(&nodeType)
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	switch nodeType {
-	case "master":
-		core.GetMasterNode().Start()
-	case "worker":
-		core.GetWorkerNode().Start()
-	default:
-		panic("Invalid node request: " + nodeType)
-	}
+	// TODO: Start server on command of a user
+	go func() {
+		defer wg.Done()
+		log.SetPrefix("Server: ")
+		log.Printf("Trying to start the Lobby")
+		networking.RunServer()
+	}()
+
+	go func() {
+		defer wg.Done()
+		log.SetPrefix("Client: ")
+		log.Printf("Trying to start a client")
+		networking.RunClient()
+	}()
+
+	wg.Wait()
 }
