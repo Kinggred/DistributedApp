@@ -3,10 +3,13 @@ package main
 import (
 	"log"
 	"sync"
+	config "tic-tac-toe/core/config"
 	networking "tic-tac-toe/core/networking"
 )
 
 func main() {
+
+	config.LoadVariables()
 	var wg sync.WaitGroup
 	wg.Add(2)
 
@@ -18,12 +21,16 @@ func main() {
 		networking.RunServer()
 	}()
 
-	go func() {
+	if config.CONFIG.SERVER_ONLY == false {
+		go func() {
+			defer wg.Done()
+			log.SetPrefix("Client: ")
+			log.Printf("Trying to start a client")
+			networking.RunClient()
+		}()
+	} else {
 		defer wg.Done()
-		log.SetPrefix("Client: ")
-		log.Printf("Trying to start a client")
-		networking.RunClient()
-	}()
+	}
 
 	wg.Wait()
 }

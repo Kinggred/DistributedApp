@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  server1:
+    build: .
+    ports:
+      - "50054:50051" # Mapping to host
+    environment:
+      - SERVER_ADDRESS=192.168.175.102:50051 # Environment variable for address
+    networks:
+      my_lan_network:
+        ipv4_address: 192.168.175.102
+
+  server2:
+    build: .
+    ports:
+      - "50052:50051" # Different host port
+    environment:
+      - SERVER_ADDRESS=192.168.175.101:50051
+    networks:
+      my_lan_network:
+        ipv4_address: 192.168.175.101
+
+  server3:
+    build: .
+    ports:
+      - "50053:50051" # Different host port
+    environment:
+      - SERVER_ADDRESS=192.168.175.100:50051
+    networks:
+      my_lan_network:
+        ipv4_address: 192.168.175.100
+
+networks:
+  my_lan_network:
+    external: true

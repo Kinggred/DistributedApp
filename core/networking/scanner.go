@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	config "tic-tac-toe/core/config"
+	conf "tic-tac-toe/core/config"
 )
 
 func getLocalIP() net.IP {
@@ -47,7 +47,7 @@ func ScanNetwork() []string {
 
 	for i := 1; i < 254; i++ {
 		ip := fmt.Sprintf("%s%d", subnet, i)
-		if scanPort(ip, 50051, timeout) && (ip != localAddress || (config.DEBUG && ip == localAddress)) {
+		if scanPort(ip, 50051, timeout) && (ip != localAddress || (conf.CONFIG.DEBUG && ip == localAddress)) {
 			log.Printf("Active device found at %s", ip)
 			hostList = append(hostList, ip)
 		}
