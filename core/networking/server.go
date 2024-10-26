@@ -2,9 +2,9 @@ package networking
 
 import (
 	"context"
-	"log"
 	"net"
 	"sync"
+	conf "tic-tac-toe/core/config"
 	"time"
 
 	"github.com/taskcluster/slugid-go/slugid"
@@ -36,8 +36,8 @@ func (server *LobbyServer) RequestActiveLobbies(request *LobbyRequest, stream Lo
 		server.lobby.mu.RUnlock()
 
 		if err := stream.Send(proposal); err != nil {
-			// CONSIDER: This could fail silently
-			log.Fatalf("Error during response")
+			conf.ServerLogger.Printf("Client broke the connection")
+			return nil
 		}
 
 		// Possible adjustments
@@ -71,7 +71,7 @@ func RunServer() {
 
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatal("Failed to listen: ", err)
+		conf.ServerLogger.Fatal("Failed to listen: ", err)
 	}
 
 	grpcServer := grpc.NewServer()
@@ -82,9 +82,9 @@ func RunServer() {
 		grpcServer,
 		lobbyServer,
 	)
-	log.Println("LobbyServer is running on port 50051")
+	conf.ServerLogger.Printf("LobbyServer is running on port 50051")
 
 	if err := grpcServer.Serve(listener); err != nil {
-		log.Fatalf("Done shat myself")
+		conf.ServerLogger.Fatalf("Done shat myself")
 	}
 }

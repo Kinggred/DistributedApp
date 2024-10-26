@@ -2,7 +2,6 @@ package networking
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"strings"
 	"time"
@@ -13,13 +12,13 @@ import (
 func getLocalIP() net.IP {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		log.Fatalf("IP cannot be retrieved")
+		conf.ClientLogger.Fatalf("IP cannot be retrieved")
 	}
 	defer conn.Close()
 
 	localAddress := conn.LocalAddr().(*net.UDPAddr)
 
-	log.Printf("Local address found: %s", localAddress.String())
+	conf.ClientLogger.Printf("Local address found: %s", localAddress.String())
 	return localAddress.IP
 }
 
@@ -48,10 +47,10 @@ func ScanNetwork() []string {
 	for i := 1; i < 254; i++ {
 		ip := fmt.Sprintf("%s%d", subnet, i)
 		if scanPort(ip, 50051, timeout) && (ip != localAddress || (conf.CONFIG.DEBUG && ip == localAddress)) {
-			log.Printf("Active device found at %s", ip)
+			conf.ClientLogger.Printf("Active device found at %s", ip)
 			hostList = append(hostList, ip)
 		}
 	}
-	log.Printf("Sweep done, no. of hosts found: %d", len(hostList))
+	conf.ClientLogger.Printf("Sweep done, no. of hosts found: %d", len(hostList))
 	return hostList
 }
