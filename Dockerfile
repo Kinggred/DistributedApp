@@ -6,5 +6,5 @@ RUN go mod download
 # Copy the entire project
 COPY . .
 RUN go build -o tic-tac-toe ./main.go
-CMD ["/app/tic-tac-toe"]
+CMD ["/app/tic-tac-toe -mode=server_only"]
 
