@@ -11,7 +11,7 @@ type Config struct {
 	DEBUG        bool
 	VERSION_MAIN int8
 	VERSION_MIN  int8
-	SERVER_ONLY  bool
+	// SERVER_ONLY  bool OBSOLETE
 }
 
 var CONFIG Config

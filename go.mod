@@ -8,6 +8,8 @@ require (
 	google.golang.org/protobuf v1.35.1
 )
 
+require fyne.io/fyne/v2 v2.5.2 // indirect
+
 require (
 	github.com/bytedance/sonic v1.12.3 // indirect
 	github.com/bytedance/sonic/loader v0.2.1 // indirect

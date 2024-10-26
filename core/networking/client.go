@@ -20,10 +20,11 @@ const (
 func seekActiveHost(ctx context.Context, address string, port string) {
 	// TODO: Fix, WithInsecure is obsolete
 	// TODO: I forgot why I made this, but something else has to be done for sure
+	log := conf.ClientLogger.WithField("ip", address).WithField("port", port)
 
 	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
 	if err != nil {
-		conf.ClientLogger.Fatalf("Cannot connect to server %v", err)
+		log.Fatalf("Cannot connect to server %v", err)
 	}
 
 	client := NewLobbySearchServiceClient(conn)
@@ -33,25 +34,25 @@ func seekActiveHost(ctx context.Context, address string, port string) {
 	}
 	stream, err := client.RequestActiveLobbies(context.Background(), in)
 	if err != nil {
-		conf.ClientLogger.Fatalf("Error during openning stream")
+		log.Fatalf("Error during openning stream")
 	}
 
 	for {
 		select {
 		case <-ctx.Done():
-			conf.ClientLogger.Printf("Stopping connection")
+			log.Printf("Stopping connection")
 			conn.Close()
 			return
 		default:
 			response, err := stream.Recv()
 			if err == io.EOF {
-				conf.ClientLogger.Printf("Finished")
+				log.Printf("Finished")
 			}
 			if err != nil {
-				conf.ClientLogger.Fatalf("Cannot receive %v", err)
+				log.Fatalf("Cannot receive %v", err)
 			}
 			// TODO: Implement some LOOOOOOGIC
-			conf.ClientLogger.Printf("Response received: %s", response.Id)
+			log.Printf("Response received: %s", response.Id)
 		}
 	}
 }
