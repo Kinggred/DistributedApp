@@ -14,7 +14,10 @@ func GetLobbyRight() *fyne.Container {
 	refreshButton := widget.NewButton("Refresh", func() {})
 	joinButton := widget.NewButton("Join", func() {})
 
-	lobbyContainer := GetLobbyEntryContainer()
+	lobbyEntryContainer := GetLobbyEntryContainer()
+	lobbyContainer := container.NewVBox(lobbyEntryContainer, spacer)
+	scrollableLobbyListContainer := container.NewVScroll(lobbyContainer)
+	scrollableLobbyListContainer.SetMinSize(fyne.NewSize(scrollableLobbyListContainer.Size().Width, 50))
 
 	buttonRow := container.New(
 		cst.NewRatioHLayout(0.685, 0.01, 0.285),
@@ -35,7 +38,7 @@ func GetLobbyRight() *fyne.Container {
 
 	rightContainer := container.New(
 		layout.NewVBoxLayout(),
-		lobbyContainer,
+		scrollableLobbyListContainer,
 		spacer,
 		buttonRow,
 		checkboxRow)

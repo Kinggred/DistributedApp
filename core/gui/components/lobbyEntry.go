@@ -13,8 +13,8 @@ import (
 
 func GetLobbyEntryContainer() *fyne.Container {
 	// TODO: Replace hardcoded values with some king of logic
-	lobbyNameText := canvas.NewText("Lobby Name", clr.Green)
-	playerCountText := canvas.NewText("1/2", clr.Green)
+	lobbyNameText := canvas.NewText("Lobby Name", clr.Border)
+	playerCountText := canvas.NewText("1/2", clr.Border)
 
 	lobbyContainerContents := container.New(
 		cst.NewRatioHLayout(0.15, 0.685, 0.02, 0.270),
@@ -29,7 +29,7 @@ func GetLobbyEntryContainer() *fyne.Container {
 	// Border might be overrated
 	border := canvas.NewRectangle(color.Transparent)
 	border.StrokeWidth = 1
-	border.StrokeColor = clr.Green
+	border.StrokeColor = clr.Border
 
 	hiddenButton := widget.NewButton("", func() {})
 

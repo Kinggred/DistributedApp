@@ -16,8 +16,8 @@ func RenderStartingScreen() {
 
 	spacer := layout.NewSpacer()
 
-	leftContainer := cmp.GetLobbyLeft()
-	rightContainer := cmp.GetLobbyRight()
+	leftContainer := cmp.GetWaitingLeft()
+	rightContainer := cmp.GetGameScreen()
 	toolbarContainer := cmp.GetToolbar()
 
 	mainContainer := container.New(cst.NewRatioHLayout(0.45, 0.1, 0.45), leftContainer, spacer, rightContainer)

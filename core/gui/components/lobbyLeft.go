@@ -14,8 +14,6 @@ func GetLobbyLeft() *fyne.Container {
 	userNameWidget := widget.NewEntry()
 	userNameWidget.SetPlaceHolder("Username")
 
-	spacer := layout.NewSpacer()
-
 	lobbyNameWidget := widget.NewEntry()
 	lobbyNameWidget.SetPlaceHolder("Lobby Name")
 

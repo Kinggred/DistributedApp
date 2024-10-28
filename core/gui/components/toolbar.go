@@ -10,7 +10,7 @@ import (
 )
 
 func GetToolbar() fyne.CanvasObject {
-	versionText := canvas.NewText("App Version: ", clr.Green)
+	versionText := canvas.NewText("App Version: ", clr.Border)
 	toolbarContainer := container.New(cst.NewRatioHLayout(0.3, 0.7), versionText, spacer)
 	return toolbarContainer
 }
