@@ -1,4 +1,4 @@
-package gui
+package layouts
 
 import "fyne.io/fyne/v2"
 
