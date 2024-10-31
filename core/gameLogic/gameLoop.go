@@ -15,8 +15,11 @@ type Game struct {
 }
 
 func GameLoop() {
-	app := app.New()
 	glo.InitGUIStateGlobal()
+	glo.InitPlayersGlobal()
+	glo.InitLocalPlayerGlobal()
+
+	app := app.New()
 	window := gui.RenderStartingScreen(app)
 
 	window.ShowAndRun()

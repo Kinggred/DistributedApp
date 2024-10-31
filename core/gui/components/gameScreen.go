@@ -5,6 +5,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 
+	glo "tic-tac-toe/core/global"
 	cst "tic-tac-toe/core/gui/layouts"
 )
 
@@ -14,8 +15,8 @@ func GetGameScreen() *fyne.Container {
 
 	playersContainer := container.NewVBox(
 		spacer,
-		GetPlayerContainer(),
-		GetPlayerContainer(),
+		GetPlayerContainer(glo.LocalPlayer.GetUsername()),
+		GetPlayerContainer("Placeholder"),
 		pussyButton,
 	)
 

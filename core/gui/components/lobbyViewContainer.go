@@ -6,6 +6,8 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+
+	glo "tic-tac-toe/core/global"
 )
 
 func GetLobbyViewContainer() *fyne.Container {
@@ -13,7 +15,7 @@ func GetLobbyViewContainer() *fyne.Container {
 	spectatorContainer := container.New(
 		cst.NewRatioHLayout(0.05, 0.9, 0.05),
 		spacer,
-		GetPlayerContainer(),
+		GetPlayerContainer("Placeholder"),
 		spacer,
 	)
 
@@ -26,8 +28,8 @@ func GetLobbyViewContainer() *fyne.Container {
 	startButton := widget.NewButton("Start", func() {})
 
 	viewContainer := container.NewVBox(
-		GetPlayerContainer(),
-		GetPlayerContainer(),
+		GetPlayerContainer(glo.LocalPlayer.GetUsername()),
+		GetPlayerContainer("Placeholder"),
 		spectatorsScrollableContainer,
 		startButton,
 	)

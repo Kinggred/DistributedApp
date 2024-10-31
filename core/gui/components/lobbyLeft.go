@@ -17,10 +17,9 @@ func GetLobbyLeft() *fyne.Container {
 
 	usernameBinding := binding.NewString()
 	usernameBinding.AddListener(binding.NewDataListener(func() {
-		glo.PlayerInfo.Mu.Lock()
-		defer glo.PlayerInfo.Mu.Unlock()
-		glo.PlayerInfo.Username, _ = usernameBinding.Get()
-		conf.GuiLogger.Printf("Changed player name: " + glo.PlayerInfo.Username)
+		username, _ := usernameBinding.Get()
+		glo.LocalPlayer.SetUsername(username)
+		conf.GuiLogger.Printf("Changed player name: " + glo.LocalPlayer.GetUsername())
 	}))
 
 	userNameWidget := widget.NewEntryWithData(usernameBinding)

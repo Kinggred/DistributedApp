@@ -9,9 +9,9 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-func GetPlayerContainer() *fyne.Container {
+func GetPlayerContainer(playerName string) *fyne.Container {
 	// TODO: Replace hardcoded values with some king of logic
-	playerNameText := canvas.NewText("Player Name", clr.Border)
+	playerNameText := canvas.NewText(playerName, clr.Border)
 
 	playerContainerPadded := container.NewPadded(playerNameText)
 

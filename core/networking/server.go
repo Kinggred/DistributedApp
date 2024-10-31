@@ -17,7 +17,7 @@ type LobbyServer struct {
 	lobby *com.Lobby
 }
 
-func (server *LobbyServer) mapPlayer(player *com.Player) *Player {
+func (server *LobbyServer) mapPlayer(player com.Player) *Player {
 	return &Player{
 		ID:       player.ID,
 		Username: player.Username,
@@ -30,7 +30,7 @@ func (server *LobbyServer) RequestActiveLobbies(request *LobbyRequest, stream Lo
 		server.lobby.Mu.RLock()
 		proposal := &LobbyProposal{
 			Id:        server.lobby.ID,
-			Owner:     server.mapPlayer(&glo.PlayerInfo),
+			Owner:     server.mapPlayer(glo.LocalPlayer.Get()),
 			IsFull:    server.lobby.IsFull,
 			IsRunning: server.lobby.IsRunning,
 		}
@@ -56,7 +56,7 @@ func (server *LobbyServer) RequestLobbyJoin(context context.Context, request *Jo
 func (server *LobbyServer) RegisterOwnerRequest(context context.Context, request *RegisterOwnerRequest) (*RegisterOwnerResponse, error) {
 	server.lobby.Mu.Lock()
 	defer server.lobby.Mu.Unlock()
-	server.lobby.Owner = &glo.PlayerInfo
+	server.lobby.Owner = glo.LocalPlayer.Get()
 	return &RegisterOwnerResponse{
 		Accepted: true,
 	}, nil
@@ -66,7 +66,7 @@ func RunServer(name string) {
 	lobby := &com.Lobby{
 		ID:        slugid.Nice(),
 		Name:      name,
-		Owner:     &glo.PlayerInfo,
+		Owner:     glo.LocalPlayer.Get(),
 		IsFull:    false,
 		IsRunning: false,
 	}
