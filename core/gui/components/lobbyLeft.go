@@ -7,7 +7,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 
-	conf "tic-tac-toe/core/config"
+	log "tic-tac-toe/core/config/logging"
 	ita "tic-tac-toe/core/gameLogic/interactions"
 	glo "tic-tac-toe/core/global"
 	cst "tic-tac-toe/core/gui/layouts"
@@ -19,7 +19,7 @@ func GetLobbyLeft() *fyne.Container {
 	usernameBinding.AddListener(binding.NewDataListener(func() {
 		username, _ := usernameBinding.Get()
 		glo.LocalPlayer.SetUsername(username)
-		conf.GuiLogger.Printf("Changed player name: " + glo.LocalPlayer.GetUsername())
+		log.GuiLogger.Printf("Changed player name: " + glo.LocalPlayer.GetUsername())
 	}))
 
 	userNameWidget := widget.NewEntryWithData(usernameBinding)

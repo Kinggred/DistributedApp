@@ -2,7 +2,6 @@ package common
 
 import (
 	"sync"
-	cfg "tic-tac-toe/core/config"
 )
 
 type FieldStatus struct {
@@ -23,7 +22,8 @@ func (fs *FieldStatus) SetByIndex(index int8, value int8) {
 	fs.arr[index] = value
 
 	if valid != true {
-		cfg.GameLogger.Printf("Incorrect value provided")
+		// There should be a log here, but it would introduce an import cycle so.
+		// this has to do
 	}
 }
 

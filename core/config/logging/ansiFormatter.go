@@ -1,4 +1,4 @@
-package config
+package logging
 
 import (
 	"fmt"
@@ -7,27 +7,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Formatter struct{}
+type AnsiFormatter struct{}
 
-var ServerLogger *logrus.Entry
-var ClientLogger *logrus.Entry
-var AppLogger *logrus.Entry
-var GameLogger *logrus.Entry
-var GuiLogger *logrus.Entry
+func (f *AnsiFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+	var (
+		appColor        = "\033[32m"
+		serverColor     = "\033[31m"
+		clientColor     = "\033[33m"
+		gameColor       = "\033[37m"
+		guiColor        = "\033[36m"
+		resetColor      = "\033[0m"
+		additionalColor = "\033[35m"
+	)
 
-var (
-	appColor        = "\033[32m"
-	serverColor     = "\033[31m"
-	clientColor     = "\033[33m"
-	gameColor       = "\033[37m"
-	guiColor        = "\033[36m"
-	resetColor      = "\033[0m"
-	additionalColor = "\033[35m"
-)
-
-const COMP string = "component"
-
-func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	component, ok := entry.Data[COMP]
 	var componentString string
 
@@ -56,14 +48,4 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	level := entry.Level.String()
 	logMessage := fmt.Sprintf("%s[%s] %s: %s%s\n", componentString, level, timestamp, entry.Message, fields)
 	return []byte(logMessage), nil
-}
-
-func SetupLoggers() {
-	logger := logrus.New()
-	logger.SetFormatter(&Formatter{})
-	AppLogger = logger.WithField(COMP, "App")
-	ServerLogger = logger.WithField(COMP, "Server")
-	ClientLogger = logger.WithField(COMP, "Client")
-	GameLogger = logger.WithField(COMP, "Game")
-	GuiLogger = logger.WithField(COMP, "GUI")
 }

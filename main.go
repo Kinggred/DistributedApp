@@ -4,7 +4,8 @@ import (
 	//"context"
 	"flag"
 	//"sync"
-	config "tic-tac-toe/core/config"
+	"tic-tac-toe/core/config"
+	loggers "tic-tac-toe/core/config/logging"
 	networking "tic-tac-toe/core/networking"
 
 	//"time"
@@ -14,9 +15,9 @@ import (
 
 func main() {
 	config.LoadVariables()
-	config.SetupLoggers()
+	loggers.SetupLoggers()
 
-	log := config.AppLogger
+	log := loggers.AppLogger
 	// ctx, cancel := context.WithCancel(context.Background())
 	// TODO: Maybe move outside one day
 	mode := flag.String("mode", "", "Set to 'server_only' if no gui or client is desired")

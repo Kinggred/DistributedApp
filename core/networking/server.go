@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 	com "tic-tac-toe/core/common"
-	conf "tic-tac-toe/core/config"
+	log "tic-tac-toe/core/config/logging"
 	glo "tic-tac-toe/core/global"
 	"time"
 
@@ -37,7 +37,7 @@ func (server *LobbyServer) RequestActiveLobbies(request *LobbyRequest, stream Lo
 		server.lobby.Mu.RUnlock()
 
 		if err := stream.Send(proposal); err != nil {
-			conf.ServerLogger.Printf("Client broke the connection")
+			log.ServerLogger.Printf("Client broke the connection")
 			return nil
 		}
 
@@ -73,7 +73,7 @@ func RunServer(name string) {
 
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		conf.ServerLogger.Fatal("Failed to listen: ", err)
+		log.ServerLogger.Fatal("Failed to listen: ", err)
 	}
 
 	grpcServer := grpc.NewServer()
@@ -84,9 +84,9 @@ func RunServer(name string) {
 		grpcServer,
 		lobbyServer,
 	)
-	conf.ServerLogger.Printf("LobbyServer ('" + name + "') is running on port 50051")
+	log.ServerLogger.Printf("LobbyServer ('" + name + "') is running on port 50051")
 
 	if err := grpcServer.Serve(listener); err != nil {
-		conf.ServerLogger.Fatalf("Done shat myself")
+		log.ServerLogger.Fatalf("Done shat myself")
 	}
 }

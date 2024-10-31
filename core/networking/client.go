@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	conf "tic-tac-toe/core/config"
+	log "tic-tac-toe/core/config/logging"
 
 	"google.golang.org/grpc"
 )
@@ -20,7 +21,7 @@ const (
 func seekActiveHost(ctx context.Context, address string, port string) {
 	// TODO: Fix, WithInsecure is obsolete
 	// TODO: I forgot why I made this, but something else has to be done for sure
-	log := conf.ClientLogger.WithField("ip", address).WithField("port", port)
+	log := log.ClientLogger.WithField("ip", address).WithField("port", port)
 
 	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
 	if err != nil {
@@ -63,7 +64,7 @@ func RunClient(ctx context.Context) {
 	// TODO: This has to be updatable prefferabbly without reconnecting already established links.
 	// No clue how to do this, at least for now.
 	// Changed my mind, reconnecting will do.
-	conf.ClientLogger.Printf("Started a client")
+	log.ClientLogger.Printf("Started a client")
 	var wg sync.WaitGroup
 	activeHosts := ScanNetwork()
 

@@ -2,7 +2,7 @@ package interactions
 
 import (
 	"sync"
-	cfg "tic-tac-toe/core/config"
+	log "tic-tac-toe/core/config/logging"
 	glo "tic-tac-toe/core/global"
 	netw "tic-tac-toe/core/networking"
 )
@@ -13,7 +13,7 @@ func HostAGame(name string) {
 	if !glo.IsServerRunning() {
 		go func() {
 			defer wg.Done()
-			cfg.AppLogger.Printf("Trying to start the Lobby")
+			log.AppLogger.Printf("Trying to start the Lobby")
 			glo.ChangeServerStatus()
 			netw.RunServer(name)
 		}()

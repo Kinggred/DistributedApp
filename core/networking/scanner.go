@@ -7,18 +7,19 @@ import (
 	"time"
 
 	conf "tic-tac-toe/core/config"
+	log "tic-tac-toe/core/config/logging"
 )
 
 func getLocalIP() net.IP {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		conf.ClientLogger.Fatalf("IP cannot be retrieved")
+		log.ClientLogger.Fatalf("IP cannot be retrieved")
 	}
 	defer conn.Close()
 
 	localAddress := conn.LocalAddr().(*net.UDPAddr)
 
-	conf.ClientLogger.Printf("Local address found: %s", localAddress.String())
+	log.ClientLogger.Printf("Local address found: %s", localAddress.String())
 	return localAddress.IP
 }
 
@@ -47,10 +48,10 @@ func ScanNetwork() []string {
 	for i := 1; i < 254; i++ {
 		ip := fmt.Sprintf("%s%d", subnet, i)
 		if scanPort(ip, 50051, timeout) && (ip != localAddress || (conf.CONFIG.DEBUG && ip == localAddress)) {
-			conf.ClientLogger.Printf("Active device found at %s", ip)
+			log.ClientLogger.Printf("Active device found at %s", ip)
 			hostList = append(hostList, ip)
 		}
 	}
-	conf.ClientLogger.Printf("Sweep done, no. of hosts found: %d", len(hostList))
+	log.ClientLogger.Printf("Sweep done, no. of hosts found: %d", len(hostList))
 	return hostList
 }
