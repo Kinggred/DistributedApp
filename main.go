@@ -1,12 +1,15 @@
 package main
 
 import (
-	"context"
+	//"context"
 	"flag"
-	"sync"
+	//"sync"
 	config "tic-tac-toe/core/config"
 	networking "tic-tac-toe/core/networking"
-	"time"
+
+	//"time"
+
+	game "tic-tac-toe/core/gameLogic"
 )
 
 func main() {
@@ -14,7 +17,7 @@ func main() {
 	config.SetupLoggers()
 
 	log := config.AppLogger
-	ctx, cancel := context.WithCancel(context.Background())
+	// ctx, cancel := context.WithCancel(context.Background())
 	// TODO: Maybe move outside one day
 	mode := flag.String("mode", "", "Set to 'server_only' if no gui or client is desired")
 	flag.Parse()
@@ -23,26 +26,31 @@ func main() {
 	case "server_only":
 		log.Printf("Starting in server_only mode")
 		log.Printf("Trying to start the Lobby")
-		networking.RunServer()
+		networking.RunServer("")
 	default:
-		log.Printf("Starting in normal mode")
-		var wg sync.WaitGroup
-
-		wg.Add(2)
-		// TODO: Start server on command of a user
-		go func() {
-			defer wg.Done()
-			log.Printf("Trying to start the Lobby")
-			networking.RunServer()
-		}()
-
-		go func() {
-			defer wg.Done()
-			log.Printf("Trying to start a client")
-			networking.RunClient(ctx)
-		}()
-		time.Sleep(60 * time.Second)
-		cancel()
-		wg.Wait()
+		game.GameLoop()
 	}
+
 }
+
+// TODO: Cleanup, left in case of a major fuckup
+// And for som gitless sneek peeks
+//  	log.Printf("Starting in normal mode")
+//  	var wg sync.WaitGroup
+//
+//		wg.Add(2)
+//		// TODO: Start server on command of a user
+//		go func() {
+//			defer wg.Done()
+//			log.Printf("Trying to start the Lobby")
+//			networking.RunServer()
+//		}()
+//
+//		go func() {
+//			defer wg.Done()
+//			log.Printf("Trying to start a client")
+//			networking.RunClient(ctx)
+//		}()
+//		time.Sleep(60 * time.Second)
+//		cancel()
+//		wg.Wait()

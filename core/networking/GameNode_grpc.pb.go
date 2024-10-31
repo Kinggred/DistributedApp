@@ -4,6 +4,8 @@
 // - protoc             v5.28.1
 // source: GameNode.proto
 
+// Version 4
+
 package networking
 
 import (
@@ -19,9 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LobbySearchService_RequestActiveLobbies_FullMethodName = "/core.LobbySearchService/RequestActiveLobbies"
-	LobbySearchService_RequestLobbyJoin_FullMethodName     = "/core.LobbySearchService/RequestLobbyJoin"
-	LobbySearchService_RegisterOwner_FullMethodName        = "/core.LobbySearchService/RegisterOwner"
+	LobbySearchService_RequestActiveLobbies_FullMethodName = "/networking.LobbySearchService/RequestActiveLobbies"
+	LobbySearchService_RequestLobbyJoin_FullMethodName     = "/networking.LobbySearchService/RequestLobbyJoin"
+	LobbySearchService_RegisterOwner_FullMethodName        = "/networking.LobbySearchService/RegisterOwner"
 )
 
 // LobbySearchServiceClient is the client API for LobbySearchService service.
@@ -178,7 +180,7 @@ func _LobbySearchService_RegisterOwner_Handler(srv interface{}, ctx context.Cont
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var LobbySearchService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "core.LobbySearchService",
+	ServiceName: "networking.LobbySearchService",
 	HandlerType: (*LobbySearchServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

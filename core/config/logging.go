@@ -12,11 +12,15 @@ type Formatter struct{}
 var ServerLogger *logrus.Entry
 var ClientLogger *logrus.Entry
 var AppLogger *logrus.Entry
+var GameLogger *logrus.Entry
+var GuiLogger *logrus.Entry
 
 var (
 	appColor        = "\033[32m"
 	serverColor     = "\033[31m"
 	clientColor     = "\033[33m"
+	gameColor       = "\033[37m"
+	guiColor        = "\033[36m"
 	resetColor      = "\033[0m"
 	additionalColor = "\033[35m"
 )
@@ -35,6 +39,10 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 			componentString = fmt.Sprintf("%s[%s]%s ", serverColor, component, resetColor)
 		case "Client":
 			componentString = fmt.Sprintf("%s[%s]%s ", clientColor, component, resetColor)
+		case "Game":
+			componentString = fmt.Sprintf("%s[%s]%s ", gameColor, component, resetColor)
+		case "GUI":
+			componentString = fmt.Sprintf("%s[%s]%s ", guiColor, component, resetColor)
 		}
 		delete(entry.Data, COMP)
 	}
@@ -56,4 +64,6 @@ func SetupLoggers() {
 	AppLogger = logger.WithField(COMP, "App")
 	ServerLogger = logger.WithField(COMP, "Server")
 	ClientLogger = logger.WithField(COMP, "Client")
+	GameLogger = logger.WithField(COMP, "Game")
+	GuiLogger = logger.WithField(COMP, "GUI")
 }

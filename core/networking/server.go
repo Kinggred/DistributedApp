@@ -3,37 +3,38 @@ package networking
 import (
 	"context"
 	"net"
-	"sync"
+	com "tic-tac-toe/core/common"
 	conf "tic-tac-toe/core/config"
+	glo "tic-tac-toe/core/global"
 	"time"
 
 	"github.com/taskcluster/slugid-go/slugid"
 	"google.golang.org/grpc"
 )
 
-type Lobby struct {
-	ID        string
-	Owner     string
-	IsFull    bool
-	IsRunning bool
-	mu        sync.RWMutex
-}
-
 type LobbyServer struct {
 	UnimplementedLobbySearchServiceServer
-	lobby *Lobby
+	lobby *com.Lobby
+}
+
+func (server *LobbyServer) mapPlayer(player com.Player) *Player {
+	return &Player{
+		ID:       player.ID,
+		Username: player.Username,
+		Shape:    int32(player.Shape),
+	}
 }
 
 func (server *LobbyServer) RequestActiveLobbies(request *LobbyRequest, stream LobbySearchService_RequestActiveLobbiesServer) error {
 	for {
-		server.lobby.mu.RLock()
+		server.lobby.Mu.RLock()
 		proposal := &LobbyProposal{
 			Id:        server.lobby.ID,
-			Owner:     server.lobby.Owner,
+			Owner:     server.mapPlayer(glo.LocalPlayer.Get()),
 			IsFull:    server.lobby.IsFull,
 			IsRunning: server.lobby.IsRunning,
 		}
-		server.lobby.mu.RUnlock()
+		server.lobby.Mu.RUnlock()
 
 		if err := stream.Send(proposal); err != nil {
 			conf.ServerLogger.Printf("Client broke the connection")
@@ -53,18 +54,19 @@ func (server *LobbyServer) RequestLobbyJoin(context context.Context, request *Jo
 }
 
 func (server *LobbyServer) RegisterOwnerRequest(context context.Context, request *RegisterOwnerRequest) (*RegisterOwnerResponse, error) {
-	server.lobby.mu.Lock()
-	defer server.lobby.mu.Unlock()
-	server.lobby.Owner = request.Id
+	server.lobby.Mu.Lock()
+	defer server.lobby.Mu.Unlock()
+	server.lobby.Owner = glo.LocalPlayer.Get()
 	return &RegisterOwnerResponse{
 		Accepted: true,
 	}, nil
 }
 
-func RunServer() {
-	lobby := &Lobby{
+func RunServer(name string) {
+	lobby := &com.Lobby{
 		ID:        slugid.Nice(),
-		Owner:     "",
+		Name:      name,
+		Owner:     glo.LocalPlayer.Get(),
 		IsFull:    false,
 		IsRunning: false,
 	}
@@ -82,7 +84,7 @@ func RunServer() {
 		grpcServer,
 		lobbyServer,
 	)
-	conf.ServerLogger.Printf("LobbyServer is running on port 50051")
+	conf.ServerLogger.Printf("LobbyServer ('" + name + "') is running on port 50051")
 
 	if err := grpcServer.Serve(listener); err != nil {
 		conf.ServerLogger.Fatalf("Done shat myself")
