@@ -1,7 +1,9 @@
 syntax = "proto3";
 
-package core;
-option go_package = "./core";
+// Version 4
+
+package networking;
+option go_package = "./core/networking";
 
 service LobbySearchService {
         rpc RequestActiveLobbies(LobbyRequest) returns (stream LobbyProposal);
@@ -17,17 +19,15 @@ message LobbyRequest {
     }
 // Active servers respond
 message LobbyProposal {
-        // Sligid-go ?
         string id = 1;
-        // Player name ?
-        string owner = 2;
-        bool is_full = 3;
-        bool is_running = 4;
+        string name =2;
+        Player owner = 3;
+        bool is_full = 4;
+        bool is_running = 5;
     }
 
 message JoinLobbyRequest {
-        string id = 1;
-        string name = 2;
+        Player player = 1;
     }
 
 message JoinLobbyResponse {
@@ -41,6 +41,12 @@ message RegisterOwnerRequest {
 
 message RegisterOwnerResponse {
         bool accepted = 1;
+    }
+
+message Player {
+        string ID = 1;
+        string Username = 2;
+        int32 Shape = 3;
     }
 
 // service GameService() {

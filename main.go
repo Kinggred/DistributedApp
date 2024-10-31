@@ -5,9 +5,11 @@ import (
 	"flag"
 	//"sync"
 	config "tic-tac-toe/core/config"
-	"tic-tac-toe/core/gui"
 	networking "tic-tac-toe/core/networking"
+
 	//"time"
+
+	game "tic-tac-toe/core/gameLogic"
 )
 
 func main() {
@@ -24,10 +26,11 @@ func main() {
 	case "server_only":
 		log.Printf("Starting in server_only mode")
 		log.Printf("Trying to start the Lobby")
-		networking.RunServer()
+		networking.RunServer("")
 	default:
-		gui.RenderStartingScreen()
+		game.GameLoop()
 	}
+
 }
 
 // TODO: Cleanup, left in case of a major fuckup
