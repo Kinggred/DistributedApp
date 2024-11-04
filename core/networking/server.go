@@ -14,7 +14,7 @@ import (
 
 type LobbyServer struct {
 	UnimplementedLobbySearchServiceServer
-	lobby *com.Lobby
+	lobby *com.LocalLobby
 }
 
 func (server *LobbyServer) mapPlayer(player com.Player) *Player {
@@ -29,10 +29,10 @@ func (server *LobbyServer) RequestActiveLobbies(request *LobbyRequest, stream Lo
 	for {
 		server.lobby.Mu.RLock()
 		proposal := &LobbyProposal{
-			Id:        server.lobby.ID,
+			Id:        server.lobby.Lobby.ID,
 			Owner:     server.mapPlayer(glo.LocalPlayer.Get()),
-			IsFull:    server.lobby.IsFull,
-			IsRunning: server.lobby.IsRunning,
+			IsFull:    server.lobby.Lobby.IsFull,
+			IsRunning: server.lobby.Lobby.IsRunning,
 		}
 		server.lobby.Mu.RUnlock()
 
@@ -47,8 +47,10 @@ func (server *LobbyServer) RequestActiveLobbies(request *LobbyRequest, stream Lo
 }
 
 func (server *LobbyServer) RequestLobbyJoin(context context.Context, request *JoinLobbyRequest) (*JoinLobbyResponse, error) {
+	server.lobby.Mu.Lock()
+	defer server.lobby.Mu.Unlock()
 	return &JoinLobbyResponse{
-		Id:  server.lobby.ID,
+		Id:  server.lobby.Lobby.ID,
 		Key: "some_key", // Logic to generate key should be added
 	}, nil
 }
@@ -56,7 +58,7 @@ func (server *LobbyServer) RequestLobbyJoin(context context.Context, request *Jo
 func (server *LobbyServer) RegisterOwnerRequest(context context.Context, request *RegisterOwnerRequest) (*RegisterOwnerResponse, error) {
 	server.lobby.Mu.Lock()
 	defer server.lobby.Mu.Unlock()
-	server.lobby.Owner = glo.LocalPlayer.Get()
+	server.lobby.Lobby.Owner = glo.LocalPlayer.Get()
 	return &RegisterOwnerResponse{
 		Accepted: true,
 	}, nil
@@ -71,6 +73,7 @@ func RunServer(name string) {
 		IsRunning: false,
 	}
 
+	glo.LocalLobbyData.SetLobby(lobby)
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.ServerLogger.Fatal("Failed to listen: ", err)
@@ -78,7 +81,7 @@ func RunServer(name string) {
 
 	grpcServer := grpc.NewServer()
 	lobbyServer := &LobbyServer{
-		lobby: lobby,
+		lobby: &glo.LocalLobbyData,
 	}
 	RegisterLobbySearchServiceServer(
 		grpcServer,

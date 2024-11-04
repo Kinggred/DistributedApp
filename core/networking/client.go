@@ -5,8 +5,10 @@ import (
 	"io"
 	"sync"
 
+	com "tic-tac-toe/core/common"
 	conf "tic-tac-toe/core/config"
 	log "tic-tac-toe/core/config/logging"
+	glo "tic-tac-toe/core/global"
 
 	"google.golang.org/grpc"
 )
@@ -25,35 +27,65 @@ func seekActiveHost(ctx context.Context, address string, port string) {
 
 	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Cannot connect to server %v", err)
+		log.Errorf("Cannot connect to server %v", err)
+		return
 	}
+	defer conn.Close()
 
 	client := NewLobbySearchServiceClient(conn)
 	in := &LobbyRequest{
 		VersionMain: int32(conf.CONFIG.VERSION_MAIN),
 		VersionMin:  int32(conf.CONFIG.VERSION_MAIN),
 	}
+
+	dataChannel := make(chan *LobbyProposal)
+
 	stream, err := client.RequestActiveLobbies(context.Background(), in)
+	defer stream.CloseSend()
+
 	if err != nil {
-		log.Fatalf("Error during openning stream")
+		log.Errorf("Error during openning stream")
+		return
 	}
+
+	go func() {
+		for {
+			response, err := stream.Recv()
+			if err == io.EOF {
+				log.Printf("Finished")
+				return
+			}
+			if err != nil {
+				log.Errorf("Cannot receive %v", err)
+				return
+			}
+			dataChannel <- response
+		}
+	}()
 
 	for {
 		select {
 		case <-ctx.Done():
-			log.Printf("Stopping connection")
 			conn.Close()
+			stream.CloseSend()
+			log.Printf("Stopping connection")
 			return
-		default:
-			response, err := stream.Recv()
-			if err == io.EOF {
-				log.Printf("Finished")
-			}
-			if err != nil {
-				log.Fatalf("Cannot receive %v", err)
-			}
-			// TODO: Implement some LOOOOOOGIC
+		case response := <-dataChannel:
 			log.Printf("Response received: %s", response.Id)
+			owner := com.Player{
+				ID:       response.GetOwner().ID,
+				Username: response.GetOwner().Username,
+				Shape:    int8(response.GetOwner().Shape),
+			}
+			lobby := com.Lobby{
+				ID:        response.GetId(),
+				Name:      response.GetName(),
+				Owner:     owner,
+				IsFull:    response.GetIsFull(),
+				IsRunning: response.GetIsRunning(),
+			}
+
+			glo.LobbiesData.AppendOrUpdateLobby(&lobby)
 		}
 	}
 }
@@ -65,6 +97,7 @@ func RunClient(ctx context.Context) {
 	// No clue how to do this, at least for now.
 	// Changed my mind, reconnecting will do.
 	log.ClientLogger.Printf("Started a client")
+	glo.KillClient.RegisterClientStart()
 	var wg sync.WaitGroup
 	activeHosts := ScanNetwork()
 
@@ -76,4 +109,5 @@ func RunClient(ctx context.Context) {
 		}()
 	}
 	wg.Wait()
+	glo.KillClient.RegisterClientShutdown()
 }

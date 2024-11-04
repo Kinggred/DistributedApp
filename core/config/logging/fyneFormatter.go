@@ -16,22 +16,22 @@ func (f *FyneFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	if ok {
 		switch component {
 		case "App":
-			componentString = fmt.Sprintf("**[%s]** ", component) // Bold
+			componentString = fmt.Sprintf("**[%s]** ", component)
 		case "Server":
-			componentString = fmt.Sprintf("**[%s]** ", component) // Bold
+			componentString = fmt.Sprintf("**[%s]** ", component)
 		case "Client":
-			componentString = fmt.Sprintf("**[%s]** ", component) // Bold
+			componentString = fmt.Sprintf("**[%s]** ", component)
 		case "Game":
-			componentString = fmt.Sprintf("**[%s]** ", component) // Bold
+			componentString = fmt.Sprintf("**[%s]** ", component)
 		case "GUI":
-			componentString = fmt.Sprintf("**[%s]** ", component) // Bold
+			componentString = fmt.Sprintf("**[%s]** ", component)
 		}
 		delete(entry.Data, COMP)
 	}
 
 	fields := ""
 	for key, value := range entry.Data {
-		fields += fmt.Sprintf(" *%s:* `%v`", key, value) // Italic key, inline code value
+		fields += fmt.Sprintf(" *%s:* `%v`", key, value)
 	}
 
 	timestamp := time.Now().Format("15:04:05")
