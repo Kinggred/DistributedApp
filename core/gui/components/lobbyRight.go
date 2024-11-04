@@ -1,7 +1,10 @@
 package components
 
 import (
+	"context"
+	ita "tic-tac-toe/core/gameLogic/interactions"
 	cst "tic-tac-toe/core/gui/layouts"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -9,9 +12,13 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func GetLobbyRight() *fyne.Container {
+func GetLobbyRight(ctx context.Context) *fyne.Container {
 
-	refreshButton := widget.NewButton("Refresh", func() {})
+	refreshButton := widget.NewButton("Refresh", func() {
+		time.AfterFunc(100*time.Millisecond, func() {
+			ita.RunClientInGoroutine(ctx)
+		})
+	})
 	joinButton := widget.NewButton("Join", func() {})
 
 	lobbyEntryContainer := GetLobbyEntryContainer()

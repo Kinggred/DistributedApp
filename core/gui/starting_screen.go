@@ -1,6 +1,8 @@
 package gui
 
 import (
+	"context"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
@@ -10,14 +12,14 @@ import (
 	cst "tic-tac-toe/core/gui/layouts"
 )
 
-func RenderStartingScreen(app fyne.App) fyne.Window {
+func RenderStartingScreen(app fyne.App, ctx context.Context) fyne.Window {
 	window := app.NewWindow("Tic-Tac-Toe")
 
 	spacer := layout.NewSpacer()
 	glo.GUIState.Mu.Lock()
 	defer glo.GUIState.Mu.Unlock()
 	glo.GUIState.LeftContainer = cmp.GetLobbyLeft()
-	glo.GUIState.RightContainer = cmp.GetLobbyRight()
+	glo.GUIState.RightContainer = cmp.GetLobbyRight(ctx)
 	toolbarContainer := cmp.GetToolbar(app)
 
 	mainContainer := container.New(cst.NewRatioHLayout(0.45, 0.1, 0.45), glo.GUIState.LeftContainer, spacer, glo.GUIState.RightContainer)
