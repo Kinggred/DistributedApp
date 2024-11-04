@@ -30,6 +30,7 @@ func (server *LobbyServer) RequestActiveLobbies(request *LobbyRequest, stream Lo
 		server.lobby.Mu.RLock()
 		proposal := &LobbyProposal{
 			Id:        server.lobby.Lobby.ID,
+			Name:      server.lobby.Lobby.Name,
 			Owner:     server.mapPlayer(glo.LocalPlayer.Get()),
 			IsFull:    server.lobby.Lobby.IsFull,
 			IsRunning: server.lobby.Lobby.IsRunning,

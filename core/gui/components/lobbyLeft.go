@@ -1,6 +1,8 @@
 package components
 
 import (
+	"context"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
@@ -13,27 +15,32 @@ import (
 	cst "tic-tac-toe/core/gui/layouts"
 )
 
-func GetLobbyLeft() *fyne.Container {
+func GetLobbyLeft(ctx context.Context) *fyne.Container {
 
 	usernameBinding := binding.NewString()
 	usernameBinding.AddListener(binding.NewDataListener(func() {
 		username, _ := usernameBinding.Get()
-		glo.LocalPlayer.SetUsername(username)
-		log.GuiLogger.Printf("Changed player name: " + glo.LocalPlayer.GetUsername())
+		if glo.LocalPlayer.GetUsername() != username {
+			glo.LocalPlayer.SetUsername(username)
+			log.GuiLogger.Printf("Changed player name: " + glo.LocalPlayer.GetUsername())
+		}
 	}))
 
 	userNameWidget := widget.NewEntryWithData(usernameBinding)
 	userNameWidget.SetPlaceHolder("Username")
+	if glo.LocalPlayer.GetUsername() != "" {
+		userNameWidget.SetText(glo.LocalPlayer.GetUsername())
+	}
 
 	lobbyNameWidget := widget.NewEntry()
 	lobbyNameWidget.SetPlaceHolder("Lobby Name")
 
-	// TODO: Implement Logic
 	lobbyStartButton := widget.NewButton("Host", func() {
 		ita.HostAGame(lobbyNameWidget.Text)
 		glo.GUIState.Mu.Lock()
 		defer glo.GUIState.Mu.Unlock()
-		glo.GUIState.LeftContainer.Objects = GetWaitingLeft().Objects
+		glo.GUIState.LeftContainer.Objects = GetWaitingLeft(ctx).Objects
+		glo.GUIState.RightContainer.Objects = GetWaitingRight().Objects
 	})
 
 	lobbyCreationContainer := container.New(

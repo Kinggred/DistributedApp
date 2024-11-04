@@ -17,6 +17,7 @@ type Lobby struct {
 }
 
 type Lobbies struct {
+	Chosen  string
 	Lobbies map[string]*Lobby
 	Mu      sync.RWMutex
 }
@@ -25,6 +26,23 @@ func NewLobbies() Lobbies {
 	return Lobbies{
 		Lobbies: make(map[string]*Lobby),
 	}
+}
+func (l *Lobbies) GetChosen() string {
+	l.Mu.RLock()
+	defer l.Mu.RUnlock()
+	return l.Chosen
+}
+
+func (l *Lobbies) GetChosenLobby() *Lobby {
+	l.Mu.RLock()
+	defer l.Mu.RUnlock()
+	return l.Lobbies[l.Chosen]
+}
+
+func (l *Lobbies) SetChosen(chosen string) {
+	l.Mu.Lock()
+	defer l.Mu.Unlock()
+	l.Chosen = chosen
 }
 
 func (l *Lobbies) GetLobbies() []*Lobby {

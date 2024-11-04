@@ -22,9 +22,8 @@ type LocalPlayer struct {
 func newPlayer() Player {
 	id := slugid.Nice()
 	return Player{
-		ID: id,
-		// Defaults to id to avoid shit
-		Username: id,
+		ID:       id,
+		Username: "",
 		// Defaults to empty field
 		Shape: 0,
 	}

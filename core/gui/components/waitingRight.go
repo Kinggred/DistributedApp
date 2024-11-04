@@ -1,7 +1,6 @@
 package components
 
 import (
-	"context"
 	"image/color"
 
 	glo "tic-tac-toe/core/global"
@@ -11,15 +10,19 @@ import (
 	"fyne.io/fyne/v2/container"
 )
 
-func GetWaitingLeft(ctx context.Context) *fyne.Container {
+func GetWaitingRight() *fyne.Container {
 	userNameText := canvas.NewText(glo.LocalPlayer.GetUsername(), color.White)
 	userNameText.Alignment = fyne.TextAlignCenter
 	userNameText.TextSize = 24
 
-	waitingLeftContainer := container.NewVBox(
+	chatText := canvas.NewText("Chat placeholder", color.White)
+	chatText.Alignment = fyne.TextAlignCenter
+	chatText.TextSize = 24
+
+	waitingRightContainer := container.NewVBox(
 		userNameText,
 		spacer,
-		GetLobbyViewContainer(ctx),
+		chatText,
 	)
-	return waitingLeftContainer
+	return waitingRightContainer
 }

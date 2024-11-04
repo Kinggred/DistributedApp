@@ -21,6 +21,7 @@ func RunClientInGoroutine(ctx context.Context) {
 			break
 		}
 	}
-
-	networking.RunClient(newCtx)
+	go func() {
+		networking.RunClient(newCtx)
+	}()
 }

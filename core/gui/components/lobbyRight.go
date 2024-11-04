@@ -3,6 +3,7 @@ package components
 import (
 	"context"
 	ita "tic-tac-toe/core/gameLogic/interactions"
+	glo "tic-tac-toe/core/global"
 	cst "tic-tac-toe/core/gui/layouts"
 	"time"
 
@@ -12,18 +13,28 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+var lobbyListContainer fyne.Container
+
+func updateLobbyList() {
+	lobbyListContainer.Objects = nil
+	for _, lobby := range glo.LobbiesData.GetLobbies() {
+		lobbyEntryContainer := GetLobbyEntryContainer(lobby)
+		lobbyContainer := container.NewVBox(lobbyEntryContainer, spacer)
+		lobbyListContainer.Objects = append(lobbyListContainer.Objects, lobbyContainer)
+	}
+}
+
 func GetLobbyRight(ctx context.Context) *fyne.Container {
+	keepRefreshing := true
 
 	refreshButton := widget.NewButton("Refresh", func() {
-		time.AfterFunc(100*time.Millisecond, func() {
-			ita.RunClientInGoroutine(ctx)
-		})
+		ita.RunClientInGoroutine(ctx)
 	})
+
 	joinButton := widget.NewButton("Join", func() {})
 
-	lobbyEntryContainer := GetLobbyEntryContainer()
-	lobbyContainer := container.NewVBox(lobbyEntryContainer, spacer)
-	scrollableLobbyListContainer := container.NewVScroll(lobbyContainer)
+	lobbyListContainer = *container.NewVBox()
+	scrollableLobbyListContainer := container.NewVScroll(&lobbyListContainer)
 	scrollableLobbyListContainer.SetMinSize(fyne.NewSize(scrollableLobbyListContainer.Size().Width, 50))
 
 	buttonRow := container.New(
@@ -49,6 +60,16 @@ func GetLobbyRight(ctx context.Context) *fyne.Container {
 		spacer,
 		buttonRow,
 		checkboxRow)
+
+	// This sucks, but works
+	go func() {
+		for range time.Tick(3 * time.Second) {
+			if !keepRefreshing {
+				break
+			}
+			updateLobbyList()
+		}
+	}()
 
 	return rightContainer
 }

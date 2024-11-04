@@ -2,6 +2,8 @@ package components
 
 import (
 	"image/color"
+	"tic-tac-toe/core/common"
+	glo "tic-tac-toe/core/global"
 	clr "tic-tac-toe/core/gui/colors"
 	cst "tic-tac-toe/core/gui/layouts"
 
@@ -11,10 +13,14 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func GetLobbyEntryContainer() *fyne.Container {
-	// TODO: Replace hardcoded values with some king of logic
-	lobbyNameText := canvas.NewText("Lobby Name", clr.Border)
-	playerCountText := canvas.NewText("1/2", clr.Border)
+func GetLobbyEntryContainer(lobby *common.Lobby) *fyne.Container {
+	playerCount := "1/2"
+	if lobby.IsFull {
+		playerCount = "2/2"
+	}
+
+	lobbyNameText := canvas.NewText(lobby.Name, clr.Border)
+	playerCountText := canvas.NewText(playerCount, clr.Border)
 
 	lobbyContainerContents := container.New(
 		cst.NewRatioHLayout(0.15, 0.685, 0.02, 0.270),
@@ -31,7 +37,14 @@ func GetLobbyEntryContainer() *fyne.Container {
 	border.StrokeWidth = 1
 	border.StrokeColor = clr.Border
 
-	hiddenButton := widget.NewButton("", func() {})
+	if lobby.ID == glo.LobbiesData.GetChosen() {
+		border.StrokeWidth = 3
+	}
+
+	hiddenButton := widget.NewButton("", func() {
+		border.StrokeWidth = 3
+		glo.LobbiesData.SetChosen(lobby.ID)
+	})
 
 	lobbyContainer := container.NewStack(
 		hiddenButton,

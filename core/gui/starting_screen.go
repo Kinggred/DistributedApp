@@ -18,7 +18,7 @@ func RenderStartingScreen(app fyne.App, ctx context.Context) fyne.Window {
 	spacer := layout.NewSpacer()
 	glo.GUIState.Mu.Lock()
 	defer glo.GUIState.Mu.Unlock()
-	glo.GUIState.LeftContainer = cmp.GetLobbyLeft()
+	glo.GUIState.LeftContainer = cmp.GetLobbyLeft(ctx)
 	glo.GUIState.RightContainer = cmp.GetLobbyRight(ctx)
 	toolbarContainer := cmp.GetToolbar(app)
 
