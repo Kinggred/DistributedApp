@@ -27,7 +27,7 @@ func GetLobbyViewContainer(ctx context.Context) *fyne.Container {
 	spectatorsScrollableContainer := container.NewVScroll(spectatorsContainer)
 
 	startButton := widget.NewButton("Start", func() {})
-	abordButton := widget.NewButton("Abort", func() {
+	abortButton := widget.NewButton("Abort", func() {
 		// TODO: Server stopping logic
 		glo.GUIState.Mu.Lock()
 		defer glo.GUIState.Mu.Unlock()
@@ -35,7 +35,7 @@ func GetLobbyViewContainer(ctx context.Context) *fyne.Container {
 		glo.GUIState.RightContainer.Objects = GetLobbyRight(ctx).Objects
 	})
 
-	buttonsContainer := container.New(cst.NewRatioHLayout(0.685, 0.030, 0.385), startButton, spacer, abordButton)
+	buttonsContainer := container.New(cst.NewRatioHLayout(0.685, 0.030, 0.385), startButton, spacer, abortButton)
 
 	viewContainer := container.NewVBox(
 		GetPlayerContainer(glo.LocalPlayer.GetUsername()),

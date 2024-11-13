@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"sync"
 	"time"
 
 	conf "tic-tac-toe/core/config"
@@ -41,17 +42,30 @@ func scanPort(ip string, port int, timeout time.Duration) bool {
 
 func ScanNetwork() []string {
 	var hostList []string
+	var mu sync.Mutex
+	var wg sync.WaitGroup
 	localAddress := strings.Split(getLocalIP().String(), ":")[0]
 	subnet := getSubnet(localAddress)
-	timeout := 2 * time.Millisecond
+	// Just spent 3 days debugging not being able to see the servers.
+	// Forgot about this shit, setting this below 150ms works basically
+	timeout := 200 * time.Millisecond
 
-	for i := 1; i < 254; i++ {
-		ip := fmt.Sprintf("%s%d", subnet, i)
-		if scanPort(ip, 50051, timeout) && (ip != localAddress || (conf.CONFIG.DEBUG && ip == localAddress)) {
-			log.ClientLogger.Printf("Active device found at %s", ip)
-			hostList = append(hostList, ip)
-		}
+	for i := 1; i < 254; i += 5 {
+		wg.Add(1)
+		go func(start int) {
+			defer wg.Done()
+			for j := start; j < start+5 && j < 254; j++ {
+				ip := fmt.Sprintf("%s%d", subnet, j)
+				if scanPort(ip, 50051, timeout) && (ip != localAddress || (conf.CONFIG.DEBUG && ip == localAddress)) {
+					log.ClientLogger.Printf("Active device found at %s", ip)
+					mu.Lock()
+					hostList = append(hostList, ip)
+					mu.Unlock()
+				}
+			}
+		}(i)
 	}
+	wg.Wait()
 	log.ClientLogger.Printf("Sweep done, no. of hosts found: %d", len(hostList))
 	return hostList
 }
